@@ -1,0 +1,193 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+	#initArea,#chat,#MessageArea,#userList{
+	padding-left:500px;
+	padding-bottom:20px;
+	border:1px red solid;
+	margin-top:10px;
+	}
+	#contents{
+	margin:0,auto;
+}
+	
+    </style>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+<div id="contents">
+  <div id="initArea">
+    <h1>MyName</h1>
+    <input type="text" id="name_input" style="width:200px;" />
+    <button type="button" id="input_name">name input</button>
+  </div>
+
+<div id="userList">
+<h1>UsersList</h1>
+
+
+</div>
+
+<script type="text/javascript">
+	
+
+
+
+</script>
+        
+
+
+<div id="chat">
+ <h1>input user_name</h1>
+    <input type="text" id="megToName_input" style="width:30px;" />
+ <h1>input message</h1>
+    <input type="text" id="data_input" style="width:30px;" />
+    <button type="button" id="c2s">send</button>
+</div>
+
+<div id="MessageArea">
+<h1>MessageArea</h1>
+
+</div>
+</div>
+
+<a href="/test">test</a>
+ <button type="button" id="chat_box">chat</button>
+<script type="text/javascript">
+	
+/*	$("#chat_box").click( function(){
+		alert(Id_myself);
+			});
+
+*/
+</script>
+
+
+
+	
+  <script type="text/javascript">
+	var Id_myself="";
+	 var my_name = "";
+	var usersView = "";
+	 var megView = '';
+	var meg_box='';
+	var right = 1;
+	 var ioSocket = io.connect( "http://localhost:3000" ); // ?`???b?g?T?[?o?[?(II$B@\A (B
+
+	// ?T?[?o?[???$Bp?(I$$B~@7 (Bf?[?^?$B?b(I/$B<j(I,$BHe&=(B???
+    ioSocket.on( "connect", function() {
+	} ); // ?(IZ$BA (B
+    ioSocket.on( "disconnect", function() {} ); // ?(IX$BCG(B
+
+ // ?T?[?o?[???$Bp@W/(B???C?A???g?(IV$B$NA (B?$Bqx(I($B~@G (B?
+    ioSocket.on( "show_name", function( results ) {
+	alert(results);  
+	for(var i=0; i< results.length; i++){
+		if(results[i].socket_id){//id$Bea8e!bea(I#$Bea^e#ie`!P(Bnline$Bea8e#oea6e#k(B
+			usersView +="<a id = '"+ results[i].socket_id + "'style='color:red;'  href='' onclick='getid_buildBox(this);return false;' >"+results[i].name+"</a></b>";
+		}else{
+   			usersView +="<li>"+results[i].name+"</li>";
+		}
+	}
+	
+ 	document.getElementById("userList").innerHTML = usersView;
+	usersView='';
+
+
+});
+
+	 ioSocket.on( "show_message", function(data) {
+
+		alert("test");
+
+			megView += "<p>"+ data.myname +":"+ data.message + "</p>";
+
+//			megView += "<p>"+ data + "</p>";
+			document.getElementById("MessageArea").innerHTML = megView;
+
+	} );
+
+	ioSocket.on("c_build_chat_box",function(chat_ids){
+		meg_box += '<div id = '+chat_ids.myid+' style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">eee</div>'
+	document.getElementById("MessageArea").innerHTML = meg_box;
+	right++;
+	});	
+
+	ioSocket.on("getid_myself",function(id_myself){
+
+	Id_myself = id_myself;
+	alert('id is'+Id_myself);
+	});	
+
+  
+
+
+	
+
+	
+	$("#c2s").click( function(){
+	var data = {};
+        var name = document.getElementById("megToName_input").value;
+        var message = document.getElementById("data_input").value;
+	data.name = name;
+	data.message = message;
+	data.myname = my_name;
+	alert(name);
+
+	 ioSocket.emit("s2c", data);
+
+	});
+
+
+	$("#input_name").click( function(){
+        var name = document.getElementById("name_input").value;
+	my_name = name;
+	alert(name);
+	 ioSocket.emit("get_name", name);
+	});
+
+/*--------------*/
+
+//chat_box$B$r:n$k4X?t(B
+
+
+function builed_chatbox(){
+
+	}
+
+
+
+
+function getid_buildBox(element){
+	var chat_ids={};
+	var id = element.id;
+
+	alert("id_myself is "+Id_myself);
+	alert("partnerid is "+id);
+
+	chat_ids.myid = Id_myself;
+	chat_ids.partnerid = id;
+
+
+	meg_box += '<div id = '+id+' style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">eee</div>'
+	document.getElementById("MessageArea").innerHTML = meg_box;
+	right++;
+
+	
+//	document.getElementById("MessageArea").innerHTML = '<div id = '+id+' style="width:100; height:100; border:1px red solid; position:fixed; bottom:0; right:300;">eee</div>'
+
+//$BipBe!fecLe&+eb(I&$Beb(I6$Bea(I'(Bchat_box$BebDf(I=$BXe#k(B 
+	ioSocket.emit("s_build_chat_box",chat_ids);
+
+	};
+
+
+       </script>
+</body>
+</html>
