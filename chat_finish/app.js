@@ -16,8 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : '',
-  database : 'chat'
+  password : 'root',
+  database : 'chat',
+socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -75,7 +76,7 @@ server.listen(app.get('port'), function(){
 
 var users = {};
 
-// Ú‘±Šm—§Œã‚Ì’ÊMˆ—•”•ª‚ğ’è‹`
+// ï¿½Ú‘ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½Ì’ÊMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`
 io.sockets.on( 'connection', function( socket ) {
 	socket.join(socket.id);
   socket.on("get_name", function(name){
@@ -87,27 +88,27 @@ io.sockets.on( 'connection', function( socket ) {
 	console.log(name);
 */
 
-//©•ª‚Ìid‚ğ©•ª‚É‘—M‚·‚é
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½idï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½Mï¿½ï¿½ï¿½ï¿½
 	var id_myself = socket.id;
 	io.sockets.to(id_myself).emit("getid_myself",id_myself);
 
-//users‚Ìsocket_id‚ğXV‚·‚é
+//usersï¿½ï¿½socket_idï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½
 	
 var query = connection.query('update users set socket_id= ? where name= ?',[socket.id,name], function (err, results) {
 	console.log('--- results ---');
-	console.log(results);//ƒNƒ‰ƒXŒ^‚Ì”z—ñ
+	console.log(results);//ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì”zï¿½ï¿½
 });
 
 
-//usersList‚ğ•\¦‚·‚é
+//usersListï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 var query = connection.query('select * from users;', function (err, results) {
 	console.log('--- results ---');
-	console.log(results);//ƒNƒ‰ƒXŒ^‚Ì”z—ñ
+	console.log(results);//ï¿½Nï¿½ï¿½ï¿½Xï¿½^ï¿½Ì”zï¿½ï¿½
 	console.log('name is ...');
 	console.log(results.length);
 
-//‘Sˆõ‚ÌuserList‚ğXV‚·‚é	
+//ï¿½Sï¿½ï¿½ï¿½ï¿½userListï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½	
 	socket.broadcast.emit( 'show_name',results);
 	socket.emit( 'show_name',results);
 
@@ -120,17 +121,21 @@ socket.on("s2c", function(data){
 	var name = data.name;
 	var meg = data.message;
 	var id= '';
-
+  var my_id = '';
 	console.log(name);
 	console.log(meg);
-  //id‚ğæ“¾‚·‚é
+  //idï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½
 	for(var key in users){
 		if(users[key] == name){
 		 id = key;
 		}
+		if(users[key] == data.myname){
+			my_id = key;
+			data.myid = my_id; 
+		}
 	}
 	console.log(users);
-	console.log(id);
+	console.log(data);
 	if(id){
 	io.sockets.to(id).emit("show_message",data);
 //	socket.broadcast.emit("show_message",data);
@@ -143,7 +148,7 @@ socket.on("s2c", function(data){
 
 socket.on("s_build_chat_box",function(chat_ids){
 
-//partnerid‚Å‚Ç‚±‚Ö‘—M‚·‚é‚©‚ğŒˆ‚ß‚éAmyid‚ÅV‚µ‚¢chat_box‚Ìid‚ğŒˆ‚ß‚é
+//partneridï¿½Å‚Ç‚ï¿½ï¿½Ö‘ï¿½ï¿½Mï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½Amyidï¿½ÅVï¿½ï¿½ï¿½ï¿½chat_boxï¿½ï¿½idï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 	console.log(chat_ids);
 
 	io.sockets.to(chat_ids.partnerid).emit("c_build_chat_box",chat_ids);
