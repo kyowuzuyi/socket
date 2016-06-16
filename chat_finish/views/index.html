@@ -60,12 +60,7 @@
 <a href="/test">test</a>
  <button type="button" id="chat_box">chat</button>
 <script type="text/javascript">
-	
-/*	$("#chat_box").click( function(){
-		alert(Id_myself);
-			});
 
-*/
 </script>
 
 
@@ -73,6 +68,7 @@
 	
   <script type="text/javascript">
     var chat_boxs = {};
+	var chat_boxs_mypage = {};
 	var Id_myself="";
 	var partnerid="";
 	 var my_name = "";
@@ -89,7 +85,7 @@
 
  // ?T?[?o?[???$Bp@W/(B???C?A???g?(IV$B$NA (B?$Bqx(I($B~@G (B?
     ioSocket.on( "show_name", function( results ) {
-	alert(results);  
+//	alert(results);  
 	for(var i=0; i< results.length; i++){
 		if(results[i].socket_id){//id$Bea8e!bea(I#$Bea^e#ie`!P(Bnline$Bea8e#oea6e#k(B
 			usersView +="<li><a id = '"+ results[i].socket_id + "'style='color:red;'  href='' onclick='getid_buildBox(this);return false;' >"+results[i].name+"</a></li>";
@@ -102,18 +98,27 @@
 	usersView='';
 });
 
-	 ioSocket.on( "show_message", function(data) {
-	//	 var tt="MessageArea";
-	//	alert("test");
-       var meg_temp='';
+ioSocket.on( "show_message", function(data) {
+    var meg_temp='';
 		meg_temp += "<p>"+ data.myname +":"+ data.message + "</p>";
 		chat_boxs[data.myid] += meg_temp;
-	for(var key in chat_boxs){//各自的box里表示聊天记录
+		chat_boxs[data.yourid] += meg_temp;
+//		alert(data.myid);
+		alert('yourid is:'+data.yourid);
+		alert(chat_boxs[data.yourid]);
+	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
 		var showmeg = chat_boxs[key]
-		alert(showmeg);
+		alert('your idd is :',key);
 		document.getElementsByClassName(key)[0].innerHTML = showmeg;
 		}
 	} );
+/*
+ioSocket.on( "show_message_mypage", function(data) {
+	var show_meg_mypage = chat_boxs[data.yourid];
+    alert(show_meg_mypage);
+		document.getElementsByClassName(data.yourid)[0].innerHTML = show_meg_mypage;
+	} );
+*/
 
 	ioSocket.on("c_build_chat_box",function(chat_ids){
 		partnerid = chat_ids.myid;
@@ -128,18 +133,14 @@
 
   
 
-
-	
-
-	
 	$("#c2s").click( function(){
 	var data = {};
-        var name = document.getElementById("megToName_input").value;
-        var message = document.getElementById("data_input").value;
+    var name = document.getElementById("megToName_input").value;
+    var message = document.getElementById("data_input").value;
 	data.name = name;
 	data.message = message;
 	data.myname = my_name;
-	alert(name);
+//	alert(name);
 
 	 ioSocket.emit("s2c", data);
 
@@ -149,7 +150,7 @@
 	$("#input_name").click( function(){
         var name = document.getElementById("name_input").value;
 	my_name = name;
-	alert(name);
+	//alert(name);
 	 ioSocket.emit("get_name", name);
 	});
 
@@ -162,10 +163,23 @@ function builed_chatbox(id){
 //boxが存在するかとうかを判定する
   //  var if_hasclass = div.classList.contains('contents');
    //alert(if_hasclass);
-	//if(if_hasclas == null){
- 
-	meg_box += '<div class = '+id+' style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">eee</div>'
-	document.getElementById("MessageArea").innerHTML = meg_box;
+	//if(if_hasclas == null){     
+
+//	meg_box += '<div style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">'+id+'とchat'+'<div class = '+id+'><div></div>'
+
+//
+	var box = document.createElement('div');
+    box.className = id;
+	box.style.width = 100;
+	box.style.height = 200;
+	box.style.position = 'fixed';
+	box.style.bottom = 0;
+	box.style.left = right * 300;
+	box.style.border = "1px red solid";
+
+document.getElementById("MessageArea").appendChild(box);
+
+//	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
 	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
 	right++;
 //	}

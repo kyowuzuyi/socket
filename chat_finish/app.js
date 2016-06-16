@@ -127,7 +127,8 @@ socket.on("s2c", function(data){
   //id���擾����
 	for(var key in users){
 		if(users[key] == name){
-		 id = key;
+		 id = key;//相手のid
+		 data.yourid = id;
 		}
 		if(users[key] == data.myname){
 			my_id = key;
@@ -136,14 +137,14 @@ socket.on("s2c", function(data){
 	}
 	console.log(users);
 	console.log(data);
+	console.log('myidv is'+my_id);
 	if(id){
-	io.sockets.to(id).emit("show_message",data);
-//	socket.broadcast.emit("show_message",data);
-	socket.emit('show_message',data);
+	io.sockets.to(id).emit("show_message",data);//他人のページのchat_box
+	io.sockets.to(my_id).emit("show_message",data);//自分のページのchat_box
+	io.sockets.to(my_id).emit("show_message_mypage",data);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
-
 });
 
 socket.on("s_build_chat_box",function(chat_ids){
