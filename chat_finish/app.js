@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'root',
-  database : 'chat',
-socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : '',
+  database : 'chat'
+//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -31,8 +31,6 @@ connection.connect(function(err) {
 
 
 /*------------------------------*/
-
-
 
 
 var app = express();
@@ -48,13 +46,6 @@ app.use(express.cookieParser());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-
-// development only
-/*
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
-*/
 
 
 app.get('/', function (req, res) {
@@ -141,7 +132,7 @@ socket.on("s2c", function(data){
 	if(id){
 	io.sockets.to(id).emit("show_message",data);//他人のページのchat_box
 	io.sockets.to(my_id).emit("show_message",data);//自分のページのchat_box
-	io.sockets.to(my_id).emit("show_message_mypage",data);//自分のページのchat_box
+//	io.sockets.to(my_id).emit("show_message_mypage",data);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
