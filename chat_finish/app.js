@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : '',
-  database : 'chat'
-//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : 'root',
+  database : 'chat',
+socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -31,6 +31,8 @@ connection.connect(function(err) {
 
 
 /*------------------------------*/
+
+
 
 
 var app = express();
@@ -46,6 +48,13 @@ app.use(express.cookieParser());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
+// development only
+/*
+if ('development' == app.get('env')) {
+  app.use(express.errorHandler());
+}
+*/
 
 
 app.get('/', function (req, res) {
@@ -67,6 +76,9 @@ server.listen(app.get('port'), function(){
 
 var users = {};
 
+//meg_array.push("hjhjhjhjhj");
+
+
 // �ڑ��m�����̒ʐM�������������`
 io.sockets.on( 'connection', function( socket ) {
 	socket.join(socket.id);
@@ -86,18 +98,18 @@ io.sockets.on( 'connection', function( socket ) {
 //users��socket_id���X�V����
 	
 var query = connection.query('update users set socket_id= ? where name= ?',[socket.id,name], function (err, results) {
-	console.log('--- results ---');
-	console.log(results);//�N���X�^�̔z��
+//	console.log('--- results ---');
+//	console.log(results);//�N���X�^�̔z��
 });
 
 
 //usersList���\������
 
 var query = connection.query('select * from users;', function (err, results) {
-	console.log('--- results ---');
-	console.log(results);//�N���X�^�̔z��
-	console.log('name is ...');
-	console.log(results.length);
+//	console.log('--- results ---');
+//	console.log(results);//�N���X�^�̔z��
+//	console.log('name is ...');
+//	console.log(results.length);
 
 //�S����userList���X�V����	
 	socket.broadcast.emit( 'show_name',results);
@@ -113,9 +125,10 @@ socket.on("s2c", function(data){
 	var meg = data.message;
 	var id= '';
   var my_id = '';
-	console.log(name);
-	console.log(meg);
-  //id���擾����
+
+var meg_array = new Array();
+
+
 	for(var key in users){
 		if(users[key] == name){
 		 id = key;//相手のid
@@ -126,22 +139,40 @@ socket.on("s2c", function(data){
 			data.myid = my_id; 
 		}
 	}
-	console.log(users);
-	console.log(data);
-	console.log('myidv is'+my_id);
+
+//messageをdatabaseに登録する
+
+var query = connection.query('insert into chat (nameA,nameB,message) value(?,?,?);',[data.myname,data.name,data.message], function (err, results) {
+console.log(results);
+});
+
+//databaseから情報を取得する
+
+//var i=0;
+//var tempA;
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.name,data.name,data.myname], function (err, results) {
+	
+	console.log(results);
 	if(id){
-	io.sockets.to(id).emit("show_message",data);//他人のページのchat_box
-	io.sockets.to(my_id).emit("show_message",data);//自分のページのchat_box
-//	io.sockets.to(my_id).emit("show_message_mypage",data);//自分のページのchat_box
+	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
+	io.sockets.to(my_id).emit("show_message",data,results);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
+
+
+
 });
+
+
+});
+
+
 
 socket.on("s_build_chat_box",function(chat_ids){
 
 //partnerid�łǂ��֑��M���邩�����߂��Amyid�ŐV����chat_box��id�����߂�
-	console.log(chat_ids);
+//	console.log(chat_ids);
 
 	io.sockets.to(chat_ids.partnerid).emit("c_build_chat_box",chat_ids);
 	

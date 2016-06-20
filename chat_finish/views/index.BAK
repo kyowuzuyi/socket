@@ -20,8 +20,8 @@
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
 
-<body> 
-<div class="contents">
+<body>
+<div id="contents">
   <div id="initArea">
     <h1>MyName</h1>
     <input type="text" id="name_input" style="width:200px;" />
@@ -51,36 +51,28 @@
     <button type="button" id="c2s">send</button>
 </div>
 
-<iframe id="MessageArea">
+<div id="MessageArea">
 <h1>MessageArea</h1>
-</iframe>
 
 </div>
 </div>
 
 <a href="/test">test</a>
- <button type="button" id="chat_box" onclick="is()">chat</button>
+ <button type="button" id="chat_box">chat</button>
 <script type="text/javascript">
+	
+/*	$("#chat_box").click( function(){
+		alert(Id_myself);
+			});
 
-function is(){
-	if($(".yuyu").length){
-		alert("test");
-	}
-
-//	var k = document.querySelector('body')
-//	alert(k);
-}
-
+*/
 </script>
 
 
 
 	
   <script type="text/javascript">
-    var chat_boxs = {};
-	var chat_boxs_mypage = {};
 	var Id_myself="";
-	var partnerid="";
 	 var my_name = "";
 	var usersView = "";
 	 var megView = '';
@@ -95,10 +87,10 @@ function is(){
 
  // ?T?[?o?[???$Bp@W/(B???C?A???g?(IV$B$NA (B?$Bqx(I($B~@G (B?
     ioSocket.on( "show_name", function( results ) {
-//	alert(results);  
+	alert(results);  
 	for(var i=0; i< results.length; i++){
 		if(results[i].socket_id){//id$Bea8e!bea(I#$Bea^e#ie`!P(Bnline$Bea8e#oea6e#k(B
-			usersView +="<li><a id = '"+ results[i].socket_id + "'style='color:red;'  href='' onclick='getid_buildBox(this);return false;' >"+results[i].name+"</a></li>";
+			usersView +="<a id = '"+ results[i].socket_id + "'style='color:red;'  href='' onclick='getid_buildBox(this);return false;' >"+results[i].name+"</a></b>";
 		}else{
    			usersView +="<li>"+results[i].name+"</li>";
 		}
@@ -106,70 +98,25 @@ function is(){
 	
  	document.getElementById("userList").innerHTML = usersView;
 	usersView='';
+
+
 });
 
-ioSocket.on( "show_message", function(data) {
+	 ioSocket.on( "show_message", function(data) {
 
-
-    		var meg_temp='';
-		meg_temp += "<p>"+ data.myname +":"+ data.message + "</p>";
-/*
 		alert("test");
-		alert("tt");
-	alert(data.myid in chat_boxs);
-	
-	if(data.myid in chat_boxs){//存在する場合
-		var array_a = chat_boxs[data.myid];
-		alert("haha");
-		alert(array_a);
-		array_a.push(meg_temp);
 
-		var array_b = chat_boxs[data.yourid];
-		array_b.push(meg_temp);
+			megView += "<p>"+ data.myname +":"+ data.message + "</p>";
 
-	}else{
-		var meg_array = new Array();		
-		meg_array[0] = meg_temp;
-
-		var meg_array_2 = new Array();		
-		meg_array_2[0] = meg_temp;
-
-		chat_boxs[data.myid] = meg_array;
-		chat_boxs[data.yourid] = meg_array_2;
-
-
-
-	}		
-
-		for(var key in chat_boxs){//其他人各自的box里表示聊天记录
-			var box_array = chat_boxs[key];
-			var showmeg;
-			for(var i=0; i<box_array.length; i++){
-				showmeg += box_array[i];			
-			}
-
-	//	alert('your idd is :',key);
-		document.getElementsByClassName(key)[0].innerHTML = showmeg;
-		}
-*/
-
-
-		chat_boxs[data.myid] += meg_temp;
-		chat_boxs[data.yourid] += meg_temp;
-//		alert(data.myid);
-	//	alert('yourid is:'+data.yourid);
-		alert(chat_boxs[data.yourid]);
-	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
-		var showmeg = chat_boxs[key]
-	//	alert('your idd is :',key);
-		document.getElementsByClassName(key)[0].innerHTML = showmeg;
-		}
+//			megView += "<p>"+ data + "</p>";
+			document.getElementById("MessageArea").innerHTML = megView;
 
 	} );
 
 	ioSocket.on("c_build_chat_box",function(chat_ids){
-		partnerid = chat_ids.myid;
-		builed_chatbox(chat_ids.myid);
+		meg_box += '<div id = '+chat_ids.myid+' style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">eee</div>'
+	document.getElementById("MessageArea").innerHTML = meg_box;
+	right++;
 	});	
 
 	ioSocket.on("getid_myself",function(id_myself){
@@ -180,14 +127,18 @@ ioSocket.on( "show_message", function(data) {
 
   
 
+
+	
+
+	
 	$("#c2s").click( function(){
 	var data = {};
-    var name = document.getElementById("megToName_input").value;
-    var message = document.getElementById("data_input").value;
+        var name = document.getElementById("megToName_input").value;
+        var message = document.getElementById("data_input").value;
 	data.name = name;
 	data.message = message;
 	data.myname = my_name;
-//	alert(name);
+	alert(name);
 
 	 ioSocket.emit("s2c", data);
 
@@ -197,7 +148,7 @@ ioSocket.on( "show_message", function(data) {
 	$("#input_name").click( function(){
         var name = document.getElementById("name_input").value;
 	my_name = name;
-	//alert(name);
+	alert(name);
 	 ioSocket.emit("get_name", name);
 	});
 
@@ -206,30 +157,8 @@ ioSocket.on( "show_message", function(data) {
 //chat_box$B$r:n$k4X?t(B
 
 
-function builed_chatbox(id){
+function builed_chatbox(){
 
-
-	alert($("."+id+"").length);
-   if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存在しない場合のみで処理する
-
-	var box = document.createElement('div');
-    　　box.className = id;
-	box.style.width = 100;
-//	box.style.height = 800;
-	box.style.position = 'fixed';
-	box.style.bottom = 0;
-	box.style.left = right * 300;
-	box.style.border = "1px red solid";
-
-
-
-document.getElementById("MessageArea").appendChild(box);
-
-//	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
-	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
-	right++;
-}
-//	}
 	}
 
 
@@ -238,17 +167,17 @@ document.getElementById("MessageArea").appendChild(box);
 function getid_buildBox(element){
 	var chat_ids={};
 	var id = element.id;
-   
-    partnerid = id;
-	
-	
+
 	alert("id_myself is "+Id_myself);
 	alert("partnerid is "+id);
 
 	chat_ids.myid = Id_myself;
 	chat_ids.partnerid = id;
 
-	builed_chatbox(id);
+
+	meg_box += '<div id = '+id+' style="width:100; height:200; border:1px red solid; position:fixed; bottom:0; right:'+ (right*300) +';">eee</div>'
+	document.getElementById("MessageArea").innerHTML = meg_box;
+	right++;
 
 	
 //	document.getElementById("MessageArea").innerHTML = '<div id = '+id+' style="width:100; height:100; border:1px red solid; position:fixed; bottom:0; right:300;">eee</div>'
