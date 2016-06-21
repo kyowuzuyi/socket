@@ -20,7 +20,7 @@
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
 
-<body>
+<body style="overflow-x:hidden;">
 <div class="contents">
   <div id="initArea">
     <h1>MyName</h1>
@@ -58,8 +58,17 @@
 </div>
 </div>
 
+<div id="img1" style="width:%100; height:600px; border:0px red solid; position:fixed; top:250px;">
+
+</div>
+
+</div>
+
+
+
+
 <a href="/test">test</a>
- <button type="button" id="chat_box">chat</button>
+ <button type="button" id="animate">animate</button>
 <script type="text/javascript">
 
 </script>
@@ -99,9 +108,36 @@
 	usersView='';
 });
 
+ ioSocket.on( "animate_your", function() {
+
+	var window_width= $(window).width();
+
+	var view = " <img src='http://catalogphoto.goo-net.com/cgi-bin/search/disp_pic2.cgi?10451010_201510.jpg' id='tt1' width='300' height='500' style='margin-left:"+  window_width +"px'>";
+
+		document.getElementById("img1").innerHTML = view;
+
+	var new_width = window_width-300;
+
+	$('#tt1').animate({
+		'marginLeft': new_width
+	},5000);
+
+	new_width -= 300;
+	$('#tt1').animate({
+		'marginLeft': new_width
+	},5000);
+
+
+	});
+
+
+
 ioSocket.on( "show_message", function(data,results) {
+			
 		alert(results[2].message);
-		alert(results.length);
+
+			alert(results.length);
+	
 		 var meg_temp='';
 		for(var i=0; i<results.length; i++){
       
@@ -135,6 +171,9 @@ ioSocket.on( "show_message", function(data,results) {
 
   
 
+
+
+
 	$("#c2s").click( function(){
 	var data = {};
     var name = document.getElementById("megToName_input").value;
@@ -143,8 +182,9 @@ ioSocket.on( "show_message", function(data,results) {
 	data.message = message;
 	data.myname = my_name;
 //	alert(name);
-
+         animate_my();	
 	 ioSocket.emit("s2c", data);
+	 
 
 	});
 
@@ -154,6 +194,22 @@ ioSocket.on( "show_message", function(data,results) {
 	my_name = name;
 	 ioSocket.emit("get_name", name);
 	});
+
+//bascketball
+
+function animate_my(){
+
+	var view_my = " <img src='http://catalogphoto.goo-net.com/cgi-bin/search/disp_pic2.cgi?10451010_201510.jpg' id='tt1' width='300' height='500' style='margin-left:0px'>";
+	document.getElementById("img1").innerHTML = view_my;
+	
+
+	$('#tt1').animate({
+	'marginLeft': '-300px'
+	},5000);
+
+}
+
+
 
 /*--------------*/
 function builed_chatbox(id,name){
