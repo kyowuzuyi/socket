@@ -64,17 +64,22 @@
 
 </div>
 
-
-
-
 <a href="/test">test</a>
- <button type="button" id="animate">animate</button>
+
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+
+<div id ="drop_zone" style="width:100px; height:300px; border:1px red solid;">
+
+</div>
+
+ <a id="download" href="#" download="" onclick="handleDownload()">ダウンロード</a>
+
+
+
 <script type="text/javascript">
 
 </script>
-
-
-
 	
   <script type="text/javascript">
     var chat_boxs = {};
@@ -110,7 +115,7 @@
 
  ioSocket.on( "animate_your", function() {
 
-			var window_width= $(window).width();
+	var window_width= $(window).width();
 
 	var view = " <img src='http://catalogphoto.goo-net.com/cgi-bin/search/disp_pic2.cgi?10451010_201510.jpg' id='tt1' width='300' height='500' style='margin-left:"+  window_width +"px'>";
 
@@ -122,20 +127,46 @@
 		'marginLeft': new_width
 	},5000);
 
+	//new_width -= 300;
+	$('#tt1').animate({
+		'marginLeft': -300
+	},5000);
 	});
+
+/*-----------------------------------------*/
+	ioSocket.on("down_file",function(res){
+
+	 var blob = new Blob([ res ]);
+
+ if (window.navigator.msSaveBlob) { 
+                    window.navigator.msSaveBlob(blob, "test.txt"); 
+
+                    // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+                    window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+                } else {
+			alert("haha");
+			alert(blob);
+                    document.getElementById("download").href = window.URL.createObjectURL(blob);
+	            document.getElementById("download").download = "kumo.txt";
+                }			   
+		
+	});
+
+/*---------------------------------------------*/
 
 
 
 ioSocket.on( "show_message", function(data,results) {
-			
-		alert(results[2].message);
-
-			alert(results.length);
-	
+	//	alert(results[2].message);
+	//	alert(results.length);
+	alert(my_name);
 		 var meg_temp='';
 		for(var i=0; i<results.length; i++){
-      
-		meg_temp += "<p>"+ results[i].nameA +":"+ results[i].message + "</p>";
+				if(results[i].nameA != my_name){
+		meg_temp += "<p style='clear:both;'>"+ results[i].nameA +":"+ results[i].message + "</p>";
+				}else{
+        meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
+				}
 		}
 
 
@@ -148,7 +179,7 @@ ioSocket.on( "show_message", function(data,results) {
 	//	alert(chat_boxs[data.yourid]);
 	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
 		var showmeg = chat_boxs[key]
-		alert('your idd is :',key);
+	//	alert('your idd is :',key);
 		document.getElementsByClassName(key)[0].innerHTML = showmeg;
 		}
 	} );
@@ -163,25 +194,23 @@ ioSocket.on( "show_message", function(data,results) {
 //	alert('id is'+Id_myself);
 	});	
 
-  
-
-
-
 
 	$("#c2s").click( function(){
 	var data = {};
     var name = document.getElementById("megToName_input").value;
     var message = document.getElementById("data_input").value;
+
+//animetion
+if(message == 'basketball'){
+  animate_my();
+}
+
 	data.name = name;
 	data.message = message;
 	data.myname = my_name;
-//	alert(name);
-         animate_my();	
+//	alert(name);	
 	 ioSocket.emit("s2c", data);
-	 
-
 	});
-
 
 	$("#input_name").click( function(){
         var name = document.getElementById("name_input").value;
@@ -212,11 +241,12 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	var box = document.createElement('div');
     box.className = id;
 	box.style.width = 200;
-	//box.style.height = 200;
+	box.style.height = 200;
 	box.style.position = 'fixed';
 	box.style.bottom = 0;
 	box.style.left = right * 30;
 	box.style.border = "1px red solid";
+	box.style.overflow = 'scroll';
 
 	var h1Node = document.createElement('p');
 	var text = document.createTextNode('talk with '+name);
@@ -228,7 +258,7 @@ document.getElementById("MessageArea").appendChild(box);
 
 //	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
 	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
-	right++;
+	right += 5;
 	}
 	}
 
@@ -236,7 +266,7 @@ function getid_buildBox(element){
 	var chat_ids={};
 	var id = element.id;
 	var name = element.innerHTML;
-   alert(name);
+ //  alert(name);
     partnerid = id;
 //	alert("id_myself is "+Id_myself);
 //	alert("partnerid is "+id);
@@ -252,6 +282,76 @@ function getid_buildBox(element){
 	ioSocket.emit("s_build_chat_box",chat_ids);
 	}
 	};
+
+
+//ファイル転送するエリア
+
+
+function handleDownload() {			
+				
+		            }
+
+
+
+function handleFileSelect(evt) {
+	
+    evt.stopPropagation();
+    evt.preventDefault();
+	
+    var files = evt.dataTransfer.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+
+
+    for (var i = 0, f; f = files[i]; i++) {
+	if(f.size < 10000){
+
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate.toLocaleDateString(), '</li>');
+				  
+			   var reader = new FileReader();
+
+      // ファイルの読み込みに成功したら、その内容を<div id="result">に反映（2）
+
+      reader.addEventListener('load', function(e) {
+		alert( reader.result);
+
+		var res = reader.result;
+		 ioSocket.emit("get_file", res,partnerid);	
+}else{
+	alert("サイズが大きすぎる,エラー");	
+}
+      }, true);
+
+    // ファイルの内容をテキストとして取得（3）
+	reader.readAsBinaryString(f);
+    //  reader.readAsText(f, 'UTF-8');
+
+    }
+
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+  
+  
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+
+var dropZone = document.getElementById('drop_zone');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+
+
+
 
 
        </script>

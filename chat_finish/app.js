@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'root',
-  database : 'chat',
-socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : '',
+  database : 'chat'
+//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -119,6 +119,19 @@ var query = connection.query('select * from users;', function (err, results) {
 
 });
 
+/*------------file-----------------*/
+
+socket.on("get_file",function(res,partnerid){
+	console.log(res);
+	if(partnerid){
+	io.sockets.to(partnerid).emit("down_file",res);//他人のページへ送信す
+	}else{
+	console.log('there is not the user');	
+	}
+});
+
+/*-------------------------------------*/
+
 socket.on("s2c", function(data){
 	var name = data.name;
 	var meg = data.message;
@@ -173,10 +186,6 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 
 
 socket.on("s_build_chat_box",function(chat_ids){
-
-//partnerid�łǂ��֑��M���邩�����߂��Amyid�ŐV����chat_box��id�����߂�
-//	console.log(chat_ids);
-
 	io.sockets.to(chat_ids.partnerid).emit("c_build_chat_box",chat_ids);
 	
 

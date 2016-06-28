@@ -65,6 +65,18 @@
 </div>
 
 <a href="/test">test</a>
+
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+
+<div id ="drop_zone" style="width:100px; height:300px; border:1px red solid;">
+
+</div>
+
+ <a id="download" href="#" download="" onclick="handleDownload()">ダウンロード</a>
+
+
+
 <script type="text/javascript">
 
 </script>
@@ -120,6 +132,27 @@
 		'marginLeft': -300
 	},5000);
 	});
+
+/*-----------------------------------------*/
+	ioSocket.on("down_file",function(res){
+
+	 var blob = new Blob([ res ]);
+
+ if (window.navigator.msSaveBlob) { 
+                    window.navigator.msSaveBlob(blob, "test.txt"); 
+
+                    // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+                    window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+                } else {
+			alert("haha");
+			alert(blob);
+                    document.getElementById("download").href = window.URL.createObjectURL(blob);
+	            document.getElementById("download").download = "kumo.txt";
+                }			   
+		
+	});
+
+/*---------------------------------------------*/
 
 
 
@@ -249,6 +282,75 @@ function getid_buildBox(element){
 	ioSocket.emit("s_build_chat_box",chat_ids);
 	}
 	};
+
+
+//ファイル転送するエリア
+
+
+function handleDownload() {			
+				
+		            }
+
+
+
+function handleFileSelect(evt) {
+	
+    evt.stopPropagation();
+    evt.preventDefault();
+	
+    var files = evt.dataTransfer.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+
+
+    for (var i = 0, f; f = files[i]; i++) {
+	if(f.size < 10000){
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate.toLocaleDateString(), '</li>');
+				  
+			   var reader = new FileReader();
+
+      // ファイルの読み込みに成功したら、その内容を<div id="result">に反映（2）
+
+      reader.addEventListener('load', function(e) {
+		alert( reader.result);
+
+		var res = reader.result;
+		 ioSocket.emit("get_file", res,partnerid);	
+  }, true);
+
+}else{
+	alert("エラー");
+}
+    // ファイルの内容をテキストとして取得（3）
+	reader.readAsBinaryString(f);
+    //  reader.readAsText(f, 'UTF-8');
+
+    }
+
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+  
+  
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+
+var dropZone = document.getElementById('drop_zone');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+
+
+
 
 
        </script>
