@@ -121,10 +121,10 @@ var query = connection.query('select * from users;', function (err, results) {
 
 /*------------file-----------------*/
 
-socket.on("get_file",function(res,partnerid){
-	console.log(res);
+socket.on("get_file",function(forfile,partnerid){
+	console.log(forfile);
 	if(partnerid){
-	io.sockets.to(partnerid).emit("down_file",res);//他人のページへ送信す
+	io.sockets.to(partnerid).emit("down_file",forfile);//他人のページへ送信す
 	}else{
 	console.log('there is not the user');	
 	}

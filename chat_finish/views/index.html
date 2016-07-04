@@ -44,15 +44,10 @@
 
 
 <div id="chat">
- <h1>input user_name</h1>
-    <input type="text" id="megToName_input" style="width:30px;" />
- <h1>input message</h1>
-    <input type="text" id="data_input" style="width:30px;" />
-    <button type="button" id="c2s">send</button>
+ 
 </div>
 
 <div id="MessageArea">
-	<div id="talk">
 <h1>MessageArea</h1>
 	</div>
 </div>
@@ -134,9 +129,9 @@
 	});
 
 /*-----------------------------------------*/
-	ioSocket.on("down_file",function(res){
+	ioSocket.on("down_file",function(forfile){
 
-	 var blob = new Blob([ res ]);
+	 var blob = new Blob([ forfile.content ]);
 
  if (window.navigator.msSaveBlob) { 
                     window.navigator.msSaveBlob(blob, "test.txt"); 
@@ -147,7 +142,7 @@
 			alert("haha");
 			alert(blob);
                     document.getElementById("download").href = window.URL.createObjectURL(blob);
-	            document.getElementById("download").download = "kumo.txt";
+	            document.getElementById("download").download = forfile.info;
                 }			   
 		
 	});
@@ -180,7 +175,7 @@ ioSocket.on( "show_message", function(data,results) {
 	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
 		var showmeg = chat_boxs[key]
 	//	alert('your idd is :',key);
-		document.getElementsByClassName(key)[0].innerHTML = showmeg;
+		document.getElementsByClassName(key)[0].children[1].innerHTML = showmeg;
 		}
 	} );
 
@@ -195,28 +190,7 @@ ioSocket.on( "show_message", function(data,results) {
 	});	
 
 
-	$("#c2s").click( function(){
-	var data = {};
-    var name = document.getElementById("megToName_input").value;
-    var message = document.getElementById("data_input").value;
 
-//animetion
-if(message == 'basketball'){
-  animate_my();
-}
-
-	data.name = name;
-	data.message = message;
-	data.myname = my_name;
-//	alert(name);	
-	 ioSocket.emit("s2c", data);
-	});
-
-	$("#input_name").click( function(){
-        var name = document.getElementById("name_input").value;
-	my_name = name;
-	 ioSocket.emit("get_name", name);
-	});
 
 //bascketball
 
@@ -233,34 +207,145 @@ function animate_my(){
 }
 
 
+function test(){
+	alert('saasas');
+}
+
 
 /*--------------*/
 function builed_chatbox(id,name){
 
 if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存在しない場合のみで処理する
+
 	var box = document.createElement('div');
     box.className = id;
 	box.style.width = 200;
-	box.style.height = 200;
+	box.style.height = 400;
 	box.style.position = 'fixed';
 	box.style.bottom = 0;
 	box.style.left = right * 30;
 	box.style.border = "1px red solid";
-	box.style.overflow = 'scroll';
+	box.style.backgroundColor = '#C0C0C0'; 
+
+	var nameview = document.createElement('div');
+	nameview.className = name;
+	nameview.style.width = 195;
+	nameview.style.height = 20;
+	nameview.style.border = "1px red solid";
+	
 
 	var h1Node = document.createElement('p');
 	var text = document.createTextNode('talk with '+name);
 	h1Node.appendChild(text);
-	box.appendChild(h1Node);
+	nameview.appendChild(h1Node);	
 
 
-document.getElementById("MessageArea").appendChild(box);
+
+	var chat_message = document.createElement('div');
+	chat_message.className = 'chat_message';
+	chat_message.style.width = 195;
+	chat_message.style.height = 300;
+	chat_message.style.border = "1px red solid";
+	chat_message.style.overflow = 'scroll';
+
+	var input_area = document.createElement('div');
+	input_area.id = name;
+	input_area.style.width = 195;
+	input_area.style.height = 70;
+	input_area.style.border = "1px red solid";
+
+	var input =  document.createElement('input');
+	input.id = "data_input";
+	input.type = "text";
+	input.id = "data_input";
+	
+	var btn = document.createElement("button");
+	var t = document.createTextNode("SEND");
+//	btn.id = 'c2s';
+
+
+//-------------------------------------
+	 var f = new Function(
+	alert('test');
+	var data = {};
+	var name = $(this).parentNode.id;  
+	alert('id::'+name);
+//  var name = document.getElementById("megToName_input").value;
+    var message = document.getElementById("data_input").value;
+
+//animetion
+if(message == 'basketball'){
+  animate_my();
+}
+
+	data.name = name;
+	data.message = message;
+	data.myname = my_name;
+//	alert(name);	
+	 ioSocket.emit("s2c", data);
+	);
+
+
+
+//------------------------------------------------------------------
+
+
+
+
+
+	btn.onclick = f;
+	btn.appendChild(t); 
+ 
+	input_area.appendChild(input);
+	input_area.appendChild(btn);
+	
+
+
+	box.appendChild(nameview);
+	box.appendChild(chat_message);
+	box.appendChild(input_area);
+	
+
+	document.getElementById("MessageArea").appendChild(box);
 
 //	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
 	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
 	right += 5;
 	}
-	}
+	};
+
+//---------------------------------------------------
+/*
+	$("#c2s").click( function(){
+	alert('test');
+	var data = {};
+  
+	var name = $(this).parentNode.id;  
+	alert('id::'+name);
+//  var name = document.getElementById("megToName_input").value;
+    var message = document.getElementById("data_input").value;
+
+//animetion
+if(message == 'basketball'){
+  animate_my();
+}
+
+	data.name = name;
+	data.message = message;
+	data.myname = my_name;
+//	alert(name);	
+	 ioSocket.emit("s2c", data);
+	});
+*/
+	$("#input_name").click( function(){
+        var name = document.getElementById("name_input").value;
+	my_name = name;
+	 ioSocket.emit("get_name", name);
+	});
+
+//-----------------------------------------------
+
+
 
 function getid_buildBox(element){
 	var chat_ids={};
@@ -309,7 +394,8 @@ function handleFileSelect(evt) {
       output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
                   f.size, ' bytes, last modified: ',
                   f.lastModifiedDate.toLocaleDateString(), '</li>');
-				  
+				  alert(f.name);
+			var filename = f.name;
 			   var reader = new FileReader();
 
       // ファイルの読み込みに成功したら、その内容を<div id="result">に反映（2）
@@ -318,7 +404,13 @@ function handleFileSelect(evt) {
 		alert( reader.result);
 
 		var res = reader.result;
-		 ioSocket.emit("get_file", res,partnerid);	
+		var forfile = {};
+		forfile.content = res;
+		forfile.info = filename;	
+		 
+		alert(forfile.info);
+
+		 ioSocket.emit("get_file", forfile,partnerid);	
   }, true);
 
 }else{
