@@ -181,8 +181,8 @@ socket.on("first_show_message",function(chat_ids){
 var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[chat_ids.myname,chat_ids.yourname,chat_ids.yourname,chat_ids.myname], function (err, results) {
 	console.log(results);
 	if(id && my_id){
-	io.sockets.to(id).emit("show_message",chat_ids,results);//他人のページのchat_box
-	io.sockets.to(my_id).emit("show_message",chat_ids,results);//自分のページのchat_box
+	io.sockets.to(id).emit("first_show_message",chat_ids,results);//他人のページのchat_box
+	io.sockets.to(my_id).emit("first_show_message",chat_ids,results);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
