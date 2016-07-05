@@ -139,8 +139,8 @@
                     // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
                     window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
                 } else {
-			alert("haha");
-			alert(blob);
+		//	alert("haha");
+		//	alert(blob);
                     document.getElementById("download").href = window.URL.createObjectURL(blob);
 	            document.getElementById("download").download = forfile.info;
                 }			   
@@ -154,7 +154,7 @@
 ioSocket.on( "show_message", function(data,results) {
 	//	alert(results[2].message);
 	//	alert(results.length);
-	alert(my_name);
+//	alert(my_name);
 		 var meg_temp='';
 		for(var i=0; i<results.length; i++){
 				if(results[i].nameA != my_name){
@@ -163,10 +163,6 @@ ioSocket.on( "show_message", function(data,results) {
         meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
 				}
 		}
-
-
-
-
 		chat_boxs[data.myid] = meg_temp;
 		chat_boxs[data.yourid] = meg_temp;
 //		alert(data.myid);
@@ -209,12 +205,7 @@ function animate_my(){
 
 }
 
-
-function test(){
-	alert('saasas');
-}
-
-
+var inputname;
 /*--------------*/
 function builed_chatbox(id,name){
 
@@ -226,7 +217,7 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	box.style.height = 400;
 	box.style.position = 'fixed';
 	box.style.bottom = 0;
-	box.style.left = right * 30;
+	box.style.left = right * 300;
 	box.style.border = "1px red solid";
 	box.style.backgroundColor = '#C0C0C0'; 
 
@@ -260,17 +251,17 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	input_area.style.border = "1px red solid";
 
 	var input =  document.createElement('input');
-	input.id = "data_input";
+	input.id = name+"_input";
 	input.type = "text";
-	input.id = "data_input";
-	
+	inputname = input.id;
 	var btn = document.createElement("button");
 	var t = document.createTextNode("SEND");
 //-------------------------------------
-	ioSocket.emit('first_show_message');//
-	 var f = new Function("var data = {};var name = $(this).parent().attr('id');alert('id::'+name);var message = document.getElementById('data_input').value;if(message == 'basketball'){animate_my();}data.name = name;data.message = message;data.myname = my_name;ioSocket.emit('s2c', data);");
+
+//----------------------------------------------
+	 var f = new Function(inputname,"var data = {};var yourname = $(this).parent().attr('id');var message = $(inputname).val();if(message == 'basketball'){animate_my();}data.yourname = yourname;data.message = message;data.myname = my_name;ioSocket.emit('s2c', data);");
 //---------------------------------------	
-//------------------------------------------------------------------
+
 	btn.onclick = f;
 	btn.appendChild(t); 
  
@@ -288,7 +279,7 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 
 //	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
 	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
-	right += 5;
+	right += 1;
 	}
 	};
 
@@ -305,24 +296,26 @@ function getid_buildBox(element){
 
 	chat_ids.myid = Id_myself;
 	chat_ids.myname = my_name;
-	chat_ids.partnerid = id;
-	chat_ids.partname = name;
+	chat_ids.yourid = id;
+	chat_ids.yourname = name;
     
 
 	if(id != Id_myself){//自分と自分でchatしないよう
 	builed_chatbox(id,name);
+//	alert();
 	ioSocket.emit("s_build_chat_box",chat_ids);
 	}
+/*-----------------------------------*/
+
+	ioSocket.emit('first_show_message',chat_ids);//
+
+/*--------------------------------------*/
+
+
 	};
 
 
 //ファイル転送するエリア
-
-
-function handleDownload() {			
-				
-		            }
-
 
 
 function handleFileSelect(evt) {
@@ -348,14 +341,14 @@ function handleFileSelect(evt) {
       // ファイルの読み込みに成功したら、その内容を<div id="result">に反映（2）
 
       reader.addEventListener('load', function(e) {
-		alert( reader.result);
+	//	alert( reader.result);
 
 		var res = reader.result;
 		var forfile = {};
 		forfile.content = res;
 		forfile.info = filename;	
 		 
-		alert(forfile.info);
+	//	alert(forfile.info);
 
 		 ioSocket.emit("get_file", forfile,partnerid);	
   }, true);

@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'root',
-  database : 'chat',
-socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : '',
+  database : 'chat'
+//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -49,14 +49,6 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-/*
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
-*/
-
-
 app.get('/', function (req, res) {
     res.sendfile('views/index.html');
 });
@@ -76,9 +68,6 @@ server.listen(app.get('port'), function(){
 
 var users = {};
 
-//meg_array.push("hjhjhjhjhj");
-
-
 // �ڑ��m�����̒ʐM�������������`
 io.sockets.on( 'connection', function( socket ) {
 	socket.join(socket.id);
@@ -86,10 +75,6 @@ io.sockets.on( 'connection', function( socket ) {
 		
 		console.log(name);
 		users[socket.id]=name;
-/*
-	console.log(socket.id);
-	console.log(name);
-*/
 
 //������id�������ɑ��M����
 	var id_myself = socket.id;
@@ -106,12 +91,7 @@ var query = connection.query('update users set socket_id= ? where name= ?',[sock
 //usersList���\������
 
 var query = connection.query('select * from users;', function (err, results) {
-//	console.log('--- results ---');
-//	console.log(results);//�N���X�^�̔z��
-//	console.log('name is ...');
-//	console.log(results.length);
-
-//�S����userList���X�V����	
+	
 	socket.broadcast.emit( 'show_name',results);
 	socket.emit( 'show_name',results);
 
@@ -132,16 +112,18 @@ socket.on("get_file",function(forfile,partnerid){
 
 /*-------------------------------------*/
 
-socket.on("s2c", function(data,a){
-	var name = data.name;
+socket.on("s2c", function(data){
+	console.log(data);
+	console.log(users);
+	var name = data.yourname;
 	var meg = data.message;
 	var id= '';
-  var my_id = '';
+      var my_id = '';
 
 var meg_array = new Array();
 
 	for(var key in users){
-		if(users[key] == name){
+		if(users[key] ==  data.yourname){
 		 id = key;//相手のid
 		 data.yourid = id;
 		}
@@ -150,13 +132,15 @@ var meg_array = new Array();
 			data.myid = my_id; 
 		}
 	}
-if(a == 1)
-{
+	
+	console.log(data);
+	console.log('id is:'+id);
+
 if(data.message == 'basketball' && id != null ){
 io.sockets.to(id).emit('animate_your');
 }
 //messageをdatabaseに登録する
-var query = connection.query('insert into chat (nameA,nameB,message) value(?,?,?);',[data.myname,data.name,data.message], function (err, results) {
+var query = connection.query('insert into chat (nameA,nameB,message) value(?,?,?);',[data.myname,data.yourname,data.message], function (err, results) {
 console.log(results);
 });
 
@@ -164,7 +148,7 @@ console.log(results);
 
 //var i=0;
 //var tempA;
-var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.name,data.name,data.myname], function (err, results) {
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.yourname,data.yourname,data.myname], function (err, results) {
 	console.log(results);
 	if(id){
 	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
@@ -173,29 +157,44 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 	console.log('there is not the user');	
 	}
 });
-}else{
+
+});
+
+socket.on("first_show_message",function(chat_ids){
+	console.log(chat_ids);
+     	var name = chat_ids.yourname;
+	var id= '';
+  	var my_id = '';
+	var meg_array = new Array();
+	for(var key in users){
+		if(users[key] == name){
+		 id = key;//相手のid
+		 chat_ids.yourid = id;
+		}
+		if(users[key] == chat_ids.myname){
+			my_id = key;
+			chat_ids.myid = my_id; 
+		}
+	}
+
 	//databaseから情報を取得する
-var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.name,data.name,data.myname], function (err, results) {
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[chat_ids.myname,chat_ids.yourname,chat_ids.yourname,chat_ids.myname], function (err, results) {
 	console.log(results);
-	if(id){
-	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
-	io.sockets.to(my_id).emit("show_message",data,results);//自分のページのchat_box
+	if(id && my_id){
+	io.sockets.to(id).emit("show_message",chat_ids,results);//他人のページのchat_box
+	io.sockets.to(my_id).emit("show_message",chat_ids,results);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
 });
 
-}
-});
-
-socket.on("first_show_message",function(){
 
 });
 
 
 
 socket.on("s_build_chat_box",function(chat_ids){
-	io.sockets.to(chat_ids.partnerid).emit("c_build_chat_box",chat_ids);
+	io.sockets.to(chat_ids.yourid).emit("c_build_chat_box",chat_ids);
 	
 
 });
