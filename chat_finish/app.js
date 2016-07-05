@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : '',
-  database : 'chat'
-//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : 'root',
+  database : 'chat',
+socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -132,7 +132,7 @@ socket.on("get_file",function(forfile,partnerid){
 
 /*-------------------------------------*/
 
-socket.on("s2c", function(data){
+socket.on("s2c", function(data,a){
 	var name = data.name;
 	var meg = data.message;
 	var id= '';
@@ -150,15 +150,12 @@ var meg_array = new Array();
 			data.myid = my_id; 
 		}
 	}
-
+if(a == 1)
+{
 if(data.message == 'basketball' && id != null ){
 io.sockets.to(id).emit('animate_your');
 }
-
-
-
 //messageをdatabaseに登録する
-
 var query = connection.query('insert into chat (nameA,nameB,message) value(?,?,?);',[data.myname,data.name,data.message], function (err, results) {
 console.log(results);
 });
@@ -168,7 +165,6 @@ console.log(results);
 //var i=0;
 //var tempA;
 var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.name,data.name,data.myname], function (err, results) {
-	
 	console.log(results);
 	if(id){
 	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
@@ -176,10 +172,23 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 	}else{
 	console.log('there is not the user');	
 	}
-
-
-
 });
+}else{
+	//databaseから情報を取得する
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.name,data.name,data.myname], function (err, results) {
+	console.log(results);
+	if(id){
+	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
+	io.sockets.to(my_id).emit("show_message",data,results);//自分のページのchat_box
+	}else{
+	console.log('there is not the user');	
+	}
+});
+
+}
+});
+
+socket.on("first_show_message",function(){
 
 });
 

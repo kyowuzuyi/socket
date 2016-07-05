@@ -189,8 +189,11 @@ ioSocket.on( "show_message", function(data,results) {
 //	alert('id is'+Id_myself);
 	});	
 
-
-
+$("#input_name").click( function(){
+        var name = document.getElementById("name_input").value;
+	my_name = name;
+	 ioSocket.emit("get_name", name);
+	});
 
 //bascketball
 
@@ -248,6 +251,8 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	chat_message.style.border = "1px red solid";
 	chat_message.style.overflow = 'scroll';
 
+
+
 	var input_area = document.createElement('div');
 	input_area.id = name;
 	input_area.style.width = 195;
@@ -261,38 +266,11 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	
 	var btn = document.createElement("button");
 	var t = document.createTextNode("SEND");
-//	btn.id = 'c2s';
-
-
 //-------------------------------------
-	 var f = new Function(
-	alert('test');
-	var data = {};
-	var name = $(this).parentNode.id;  
-	alert('id::'+name);
-//  var name = document.getElementById("megToName_input").value;
-    var message = document.getElementById("data_input").value;
-
-//animetion
-if(message == 'basketball'){
-  animate_my();
-}
-
-	data.name = name;
-	data.message = message;
-	data.myname = my_name;
-//	alert(name);	
-	 ioSocket.emit("s2c", data);
-	);
-
-
-
+	ioSocket.emit('first_show_message');//
+	 var f = new Function("var data = {};var name = $(this).parent().attr('id');alert('id::'+name);var message = document.getElementById('data_input').value;if(message == 'basketball'){animate_my();}data.name = name;data.message = message;data.myname = my_name;ioSocket.emit('s2c', data);");
+//---------------------------------------	
 //------------------------------------------------------------------
-
-
-
-
-
 	btn.onclick = f;
 	btn.appendChild(t); 
  
@@ -315,37 +293,6 @@ if(message == 'basketball'){
 	};
 
 //---------------------------------------------------
-/*
-	$("#c2s").click( function(){
-	alert('test');
-	var data = {};
-  
-	var name = $(this).parentNode.id;  
-	alert('id::'+name);
-//  var name = document.getElementById("megToName_input").value;
-    var message = document.getElementById("data_input").value;
-
-//animetion
-if(message == 'basketball'){
-  animate_my();
-}
-
-	data.name = name;
-	data.message = message;
-	data.myname = my_name;
-//	alert(name);	
-	 ioSocket.emit("s2c", data);
-	});
-*/
-	$("#input_name").click( function(){
-        var name = document.getElementById("name_input").value;
-	my_name = name;
-	 ioSocket.emit("get_name", name);
-	});
-
-//-----------------------------------------------
-
-
 
 function getid_buildBox(element){
 	var chat_ids={};
