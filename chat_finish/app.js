@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : '',
-  database : 'chat'
-//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : 'root',
+  database : 'chat',
+socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -120,8 +120,6 @@ socket.on("s2c", function(data){
 	var id= '';
       var my_id = '';
 
-var meg_array = new Array();
-
 	for(var key in users){
 		if(users[key] ==  data.yourname){
 		 id = key;//相手のid
@@ -160,7 +158,35 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 
 });
 
-socket.on("first_show_message",function(chat_ids){
+socket.on("first_show_message_s2c",function(yourname,myname){
+	var data = {};
+	data.yourid = '';
+	data.myid = '';
+		for(var key in users){
+		if(users[key] ==  yourname){
+		// id = key;//相手のid
+		 data.yourid = key;
+		}
+		if(users[key] == myname){
+		//	my_id = key;
+			data.myid = key; 
+		}
+	}
+
+//databaseから情報を取得する
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[myname,yourname,yourname,myname], function (err, results) {
+	console.log(results);
+	if(data.yourid && data.myid){
+	io.sockets.to(data.yourid).emit("show_message",data,results);//他人のページのchat_box
+	io.sockets.to(data.myid).emit("show_message",data,results);//自分のページのchat_box
+	}else{
+	console.log('there is not the user');	
+	}
+});
+
+});
+/*
+socket.on("first_show_message_s2c",function(chat_ids){
 	console.log(chat_ids);
      	var name = chat_ids.yourname;
 	var id= '';
@@ -176,7 +202,6 @@ socket.on("first_show_message",function(chat_ids){
 			chat_ids.myid = my_id; 
 		}
 	}
-
 	//databaseから情報を取得する
 var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[chat_ids.myname,chat_ids.yourname,chat_ids.yourname,chat_ids.myname], function (err, results) {
 	console.log(results);
@@ -191,12 +216,10 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 
 });
 
-
+*/
 
 socket.on("s_build_chat_box",function(chat_ids){
 	io.sockets.to(chat_ids.yourid).emit("c_build_chat_box",chat_ids);
-	
-
 });
 
 
