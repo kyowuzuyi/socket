@@ -18,6 +18,19 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<style>
+.meg_your{
+border:1px solid ;
+background-color:#F5F5F5;
+clear:both;
+}
+.meg_my{
+border:1px solid ;
+background-color:#87CEEB;
+clear:both;float:right;
+
+}
+</style>
 </head>
 
 <body style="overflow-x:hidden;">
@@ -147,31 +160,6 @@
 		
 	});
 
-/*---------------------------------------------*/
-
-ioSocket.on( "first_show_message", function(chat_ids,results) {
-	 	var meg_temp='';
-		for(var i=0; i<results.length; i++){
-				if(results[i].nameA != my_name){
-		meg_temp += "<p style='clear:both;'>"+ results[i].nameA +":"+ results[i].message + "</p>";
-				}else{
-        meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
-				}
-		}
-		chat_boxs[chat_ids.myid] = meg_temp;
-		chat_boxs[chat_ids.yourid] = meg_temp;
-	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
-		var showmeg = chat_boxs[key];
-	//	alert('your idd is :',key);
-		document.getElementsByClassName(key)[0].children[1].innerHTML = showmeg;
-		}	
-
-
-	
-});
-
-
-
 
 ioSocket.on( "show_message", function(data,results) {
 	//	alert(results[2].message);
@@ -180,19 +168,20 @@ ioSocket.on( "show_message", function(data,results) {
 		 var meg_temp='';
 		for(var i=0; i<results.length; i++){
 				if(results[i].nameA != my_name){
-		meg_temp += "<p style='clear:both;'>"+ results[i].nameA +":"+ results[i].message + "</p>";
+		meg_temp += "<p class='meg_your'>"+ results[i].nameA +":"+ results[i].message + "</p>";
 				}else{
-        meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
+        meg_temp += "<p class='meg_my'>"+ results[i].message + "</p>";
 				}
 		}
 		chat_boxs[data.myid] = meg_temp;
 		chat_boxs[data.yourid] = meg_temp;
-	//	alert("myid id:"+data.myid);
-	//	alert('yourid is:'+data.yourid);
+//	alert("myid id:"+data.myid);
+//	alert('yourid is:'+data.yourid);
 	//	alert(chat_boxs[data.yourid]);
 	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
 		var showmeg = chat_boxs[key];
-	//	alert('your idd is :',key);
+	//	alert("test: "+key);
+		//alert(showmeg);
 		document.getElementsByClassName(key)[0].children[1].innerHTML = showmeg;
 		}
 	} );
@@ -200,7 +189,14 @@ ioSocket.on( "show_message", function(data,results) {
 	ioSocket.on("c_build_chat_box",function(chat_ids){
 		partnerid = chat_ids.myid;
 		builed_chatbox(chat_ids.myid,chat_ids.myname);
+	//	first_message(chat_ids.yourname,chat_ids.myname);//歴史メッセージを表示
 	});	
+
+
+function first_message(yourname,myname){
+ioSocket.emit('first_show_message_s2c',yourname,myname);
+}
+
 
 	ioSocket.on("getid_myself",function(id_myself){
 	Id_myself = id_myself;
@@ -263,7 +259,7 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	chat_message.style.width = 195;
 	chat_message.style.height = 300;
 	chat_message.style.border = "1px red solid";
-	chat_message.style.overflow = 'scroll';
+	chat_message.style.overflow = 'auto';
 
 
 
@@ -323,15 +319,15 @@ function getid_buildBox(element){
 
 	if(id != Id_myself){//自分と自分でchatしないよう
 	builed_chatbox(id,name);
-//	alert();
 	ioSocket.emit("s_build_chat_box",chat_ids);
-	}
+}
 /*-----------------------------------*/
+//ioSocket.emit('first_show_message_s2c', data);
 
-	ioSocket.emit('first_show_message',chat_ids);//
+
+//	ioSocket.emit('first_show_message_s2c',chat_ids);//
 
 /*--------------------------------------*/
-
 
 	};
 

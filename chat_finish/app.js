@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'root',
-  database : 'chat',
-socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : '',
+  database : 'chat'
+//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
