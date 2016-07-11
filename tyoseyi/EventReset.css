@@ -1,0 +1,137 @@
+body{
+	background-image:url(1.jpg);
+	height:900px;
+	width:2000px;
+
+	}
+	
+h1{
+	
+	margin-left:1000px;
+	margin-top:100px;
+	font-size:70px;
+	color: #fff;
+	text-shadow: 0 0 10px #fff,0 0 15px #fff;
+	
+	
+	}
+#a ul{
+	list-style-type:none;
+	width:300px;
+	float:left;
+	
+	
+	}
+#b{
+	width:300px;
+
+	margin-left:120px;
+	margin-top:-100px;}
+
+
+ 
+#b button {
+    color:#EFEA65;
+	font-size:20px;
+    text-decoration: none;
+    background-color:#FF2727;
+    display: block;
+    width: 200px;
+    height: 100px;
+	text-shadow: 0 0 15px #fff,0 0 5px #fff;
+    border-radius: 50%;
+    /* ここで動く速度とか設定 */
+    transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+	margin-bottom:100px;
+	
+}
+#b button:hover {
+    transform: rotate(720deg);
+    -webkit-transform: rotate(720deg);
+}
+
+
+	
+
+
+ 
+
+#b p input {
+    width: 80px;
+    height: 50px;
+	font-size:15px;
+    display: block;
+    background: #1abc9c;
+    transition: all 0.4s ease;
+    -webkit-transition: all 0.4s ease;
+	float:right;
+	margin-top:-173px;
+	color:#FFFFFF;
+	text-shadow: 0 0 15px #fff,0 0 5px #fff;
+}
+ 
+#b p input:hover {
+    box-shadow: 10px 10px 10px #8DFFBA;
+}
+
+
+#c button {
+   width: 180px;
+    height: 110px;
+	font-size:30px;
+    display: block;
+    background: #e67e22;
+    color: #fff;
+    transition: all 0.8s ease;
+    -webkit-transition: all 0.8s ease;
+
+	text-shadow: 0 0 15px #fff,0 0 5px #fff;
+	border-radius: 10%;
+	margin-left:800px;
+	margin-top:500px;
+
+}
+ 
+#c button:hover {
+   transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+}
+
+#c span{
+   margin-left:500px;
+font-size:30px;
+width:100px;
+}
+
+form{
+	background-image:url(2.jpg);
+}
+
+form p{
+	color:#36F9F6;
+		text-shadow: 0 0 10px white,0 0 15px white;
+		font-size:20px;}
+		
+.a {
+	background-color: transparent;
+	border: 2px solid #fff;
+	color: #fff;
+	line-height: 50px;
+	width:200px;
+	float:right;
+}
+.a:hover {
+	background-color: rgba(255, 255, 255, .2);
+}
+.b {
+	background-color: transparent;
+	border: 2px solid #fff;
+	color: #fff;
+	line-height: 50px;
+	width:200px;
+	float:left;
+}
+.b:hover {
+	background-color: rgba(255, 255, 255, .2);
+}

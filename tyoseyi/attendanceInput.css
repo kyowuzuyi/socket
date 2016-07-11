@@ -1,0 +1,180 @@
+body{
+	background-image:url(1.jpg);
+	height:800px;
+	width:2000px;
+	
+	}
+#aaa{
+
+	height:180px;
+	width:400px;
+	margin-left:180px;
+	margin-top:200px;
+}
+
+#aaa span{
+	color:white;
+	text-shadow: 0 0 5px #fff,0 0 5px #fff;
+	font-size:20px;
+	
+	}
+	
+#bbb{
+
+	width:400px;
+	height:600px;
+	margin-left:600px;
+	margin-top:-50px;
+	float:left;}
+#aaa h1{
+	color:red;
+	font-size:50px;
+	text-shadow: 0 0 10px #FDCECF,0 0 15px #FDCECF;
+	
+	}
+#bbb h1{
+	color:red;
+	font-size:50px;
+	text-shadow: 0 0 10px #FDCECF,0 0 15px #FDCECF;}
+	
+p{
+	color:green;
+	font-size:25px;
+	text-shadow: 0 0 10px #A9F5A3,0 0 3px #A9F5A3;
+	}
+th{
+	background-color:white;
+	height:30px;
+	width:100px;
+	text-align:center;}
+td{
+	background-color:blue;
+	height:30px;
+	width:50px;
+	font-size:25px;
+	text-align:center;
+	color:white;
+	}
+	
+
+span{
+	color:red;
+	font-size:20px;
+	}
+
+#ccc button{
+
+  background:#1AAB8A;
+  color:#fff;
+  border:none;
+  position:relative;
+  height:60px;
+  font-size:1.6em;
+  padding:0 2em;
+  cursor:pointer;
+  transition:800ms ease all;
+  outline:none;
+}
+#ccc button:hover{
+  background:#fff;
+  color:#1AAB8A;
+}
+#ccc button:before,button:after{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  height:2px;
+  width:0;
+  background: #1AAB8A;
+  transition:400ms ease all;
+}
+#ccc button:after{
+  right:inherit;
+  top:inherit;
+  left:0;
+  bottom:0;
+}
+#ccc button:hover:before,#ccc button:hover:after{
+  width:100%;
+  transition:800ms ease all;
+}
+
+input[type="radio"] {
+    position: relative;
+    -webkit-appearance: button;
+    appearance: button;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    content: "";
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+    -webkit-border-radius: 24px;
+    border-radius: 24px;
+    -webkit-box-shadow: inset 4px 4px 10px rgba(0,0,0,0.2);
+    box-shadow: inset 4px 4px 10px rgba(0,0,0,0.2);
+    vertical-align: middle;
+    cursor: pointer;
+	margin-top:-10px;
+}
+
+input[type="radio"]:checked:after {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: #CC0000;
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
+}
+
+label{
+	font-size:25px;
+	color:#6282FF;}
+
+.modal-content{
+	background-image:url(2.jpg);}
+	
+#ddd p{
+	color:white;
+	text-shadow: 0 0 10px #fff,0 0 15px #fff;
+	font-size:25px;
+	}
+	
+.button{
+	background-color: transparent;
+	border: 2px solid #fff;
+	color: #fff;
+	line-height: 50px;
+	width:200px;
+	float:left;
+	text-align:center;
+	}
+.button:hover{
+	background-color: rgba(255, 255, 255, .2);
+	}
+	
+.eee {
+	position: relative;
+	background-color: #f7d034;
+	border-radius: 4px;
+	color:#FF7905;
+	line-height: 52px;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #f7ba59;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
+}
+.eee:hover {
+	top: -4px;
+	box-shadow: 0 7px 0 #f7ba59;
+}
+.eee:active {
+	top: 3px;
+	box-shadow: none;
+}
