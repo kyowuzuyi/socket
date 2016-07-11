@@ -147,34 +147,9 @@
 		
 	});
 
-/*---------------------------------------------*/
-/*
-ioSocket.on( "first_show_message", function(chat_ids,results) {
-//チャットメッセージを取得	 
-	 	var meg_temp='';
-		for(var i=0; i<results.length; i++){
-				if(results[i].nameA != my_name){
-		meg_temp += "<p style='clear:both;'>"+ results[i].nameA +":"+ results[i].message + "</p>";
-				}else{
-        meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
-				}
-		}
-//		
-		chat_boxs[chat_ids.myid] = meg_temp;
-		chat_boxs[chat_ids.yourid] = meg_temp;
-	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
-		var showmeg = chat_boxs[key];
-	//	alert('your idd is :',key);
-		document.getElementsByClassName(key)[0].children[1].innerHTML = showmeg;
-		}	
-
-});
-*/
 
 ioSocket.on( "show_message", function(data,results) {
-	//	alert(results[2].message);
-	//	alert(results.length);
-//	alert(data);
+	alert(data);
 		 var meg_temp='';
 		for(var i=0; i<results.length; i++){
 				if(results[i].nameA != my_name){
@@ -183,29 +158,15 @@ ioSocket.on( "show_message", function(data,results) {
         meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
 				}
 		}
-		chat_boxs[data.myid] = meg_temp;
-		chat_boxs[data.yourid] = meg_temp;
-	alert("myid id:"+data.myid);
-	alert('yourid is:'+data.yourid);
-	//	alert(chat_boxs[data.yourid]);
-	for(var key in chat_boxs){//其他人各自的box里表示聊天记录
-		var showmeg = chat_boxs[key];
-		alert("test: "+key);
-		//alert(showmeg);
-		document.getElementsByClassName(key)[0].children[1].innerHTML = showmeg;
-		}
+		 document.getElementsByClassName(data)[0].children[1].innerHTML = meg_temp;
+
 	} );
 
+
 	ioSocket.on("c_build_chat_box",function(chat_ids){
-		partnerid = chat_ids.myid;
 		builed_chatbox(chat_ids.myid,chat_ids.myname);
 	//	first_message(chat_ids.yourname,chat_ids.myname);//歴史メッセージを表示
 	});	
-
-
-function first_message(yourname,myname){
-ioSocket.emit('first_show_message_s2c',yourname,myname);
-}
 
 
 	ioSocket.on("getid_myself",function(id_myself){
@@ -287,7 +248,7 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 //-------------------------------------
 	
 //----------------------------------------------
-	 var f = new Function("var data = {};var yourname = $(this).parent().attr('id');var message = $(this).prev().val();alert(message);if(message == 'basketball'){animate_my();}data.yourname = yourname;data.message = message;data.myname = my_name;ioSocket.emit('s2c', data);");
+	 var f = new Function("var data = {};var yourname = $(this).parent().attr('id');var yourid = $(this).parent().parents('div').attr('class');var message = $(this).prev().val();alert(message);if(message == 'basketball'){animate_my();}data.yourname = yourname;data.message = message;data.myname = my_name;data.yourid = yourid;data.myid = Id_myself;alert('yourid'+yourid);ioSocket.emit('s2c', data);");
 //---------------------------------------
 	btn.onclick = f;
 	btn.appendChild(t); 
@@ -305,7 +266,8 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	document.getElementById("MessageArea").appendChild(box);
 
 //	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
-	chat_boxs[id]='';//boxを作るごとに、chat_boxsに登録する
+	chat_boxs[id]=' ';//boxを作るごとに、chat_boxsに登録する
+	alert(chat_boxs);
 	right += 1;
 	}
 	};

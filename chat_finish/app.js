@@ -75,7 +75,6 @@ io.sockets.on( 'connection', function( socket ) {
 		
 		console.log(name);
 		users[socket.id]=name;
-
 //������id�������ɑ��M����
 	var id_myself = socket.id;
 	io.sockets.to(id_myself).emit("getid_myself",id_myself);
@@ -113,29 +112,9 @@ socket.on("get_file",function(forfile,partnerid){
 /*-------------------------------------*/
 
 socket.on("s2c", function(data){
-	console.log(data);
-	console.log(users);
-	var name = data.yourname;
-	var meg = data.message;
-	var id= '';
-      var my_id = '';
-
-	for(var key in users){
-		if(users[key] ==  data.yourname){
-		 id = key;//相手のid
-		 data.yourid = id;
-		}
-		if(users[key] == data.myname){
-			my_id = key;
-			data.myid = my_id; 
-		}
-	}
-	
-	console.log(data);
-	console.log('id is:'+id);
-
-if(data.message == 'basketball' && id != null ){
-io.sockets.to(id).emit('animate_your');
+console.log("data is :" + data);
+if(data.message == 'basketball' && data.yourid != null ){
+io.sockets.to(data.yourid).emit('animate_your');
 }
 //messageをdatabaseに登録する
 var query = connection.query('insert into chat (nameA,nameB,message) value(?,?,?);',[data.myname,data.yourname,data.message], function (err, results) {
@@ -147,81 +126,33 @@ console.log(results);
 //var i=0;
 //var tempA;
 var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[data.myname,data.yourname,data.yourname,data.myname], function (err, results) {
-	console.log(results);
-	if(id){
-	io.sockets.to(id).emit("show_message",data,results);//他人のページのchat_box
-	io.sockets.to(my_id).emit("show_message",data,results);//自分のページのchat_box
-	}else{
-	console.log('there is not the user');	
-	}
-});
-
-});
-
-socket.on("first_show_message_s2c",function(yourname,myname){
-	var data = {};
-	data.yourid = '';
-	data.myid = '';
-		for(var key in users){
-		if(users[key] ==  yourname){
-		// id = key;//相手のid
-		 data.yourid = key;
-		}
-		if(users[key] == myname){
-		//	my_id = key;
-			data.myid = key; 
-		}
-	}
-
-//databaseから情報を取得する
-var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[myname,yourname,yourname,myname], function (err, results) {
-	console.log(results);
 	if(data.yourid && data.myid){
-	io.sockets.to(data.yourid).emit("show_message",data,results);//他人のページのchat_box
-	io.sockets.to(data.myid).emit("show_message",data,results);//自分のページのchat_box
+	io.sockets.to(data.yourid).emit("show_message",data.myid,results);//他人のページのchat_box
+	io.sockets.to(data.myid).emit("show_message",data.yourid,results);//自分のページのchat_box
 	}else{
 	console.log('there is not the user');	
 	}
 });
 
 });
-/*
-socket.on("first_show_message_s2c",function(chat_ids){
-	console.log(chat_ids);
-     	var name = chat_ids.yourname;
-	var id= '';
-  	var my_id = '';
-	var meg_array = new Array();
-	for(var key in users){
-		if(users[key] == name){
-		 id = key;//相手のid
-		 chat_ids.yourid = id;
-		}
-		if(users[key] == chat_ids.myname){
-			my_id = key;
-			chat_ids.myid = my_id; 
-		}
-	}
-	//databaseから情報を取得する
-var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[chat_ids.myname,chat_ids.yourname,chat_ids.yourname,chat_ids.myname], function (err, results) {
-	console.log(results);
-	if(id && my_id){
-	io.sockets.to(id).emit("first_show_message",chat_ids,results);//他人のページのchat_box
-	io.sockets.to(my_id).emit("first_show_message",chat_ids,results);//自分のページのchat_box
-	}else{
-	console.log('there is not the user');	
-	}
-});
 
 
-});
-
-*/
 
 socket.on("s_build_chat_box",function(chat_ids){
 	io.sockets.to(chat_ids.yourid).emit("c_build_chat_box",chat_ids);
-});
+//databaseから情報を取得する
+var chat_mag = connection.query('select nameA,message from chat where (nameA = ? AND nameB = ?) or (nameA = ? AND nameB = ?);',[chat_ids.myname,chat_ids.yourname,chat_ids.yourname,chat_ids.myname], function (err, results) {
+	console.log(results);
+	if(chat_ids.yourid && chat_ids.myid){
+	io.sockets.to(chat_ids.yourid).emit("show_message",chat_ids.myid,results);//他人のページのchat_box
+	io.sockets.to(chat_ids.myid).emit("show_message",chat_ids.yourid,results);//自分のページのchat_box
+	}else{
+	console.log('there is not the user');	
+	}
 
+	});
+
+});
 
 
 
