@@ -36,9 +36,6 @@
 
 <script type="text/javascript">
 	
-
-
-
 </script>
         
 
@@ -64,11 +61,11 @@
 <input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
 
-<div id ="drop_zone" style="width:100px; height:300px; border:1px red solid;">
-
+<div id ="drop_zone" style="width:0px; height:50px; border:1px red solid;">
+ <a id="download" href="#" download="" onclick="handleDownload()" style="display:none;">ダウンロード</a>
 </div>
 
- <a id="download" href="#" download="" onclick="handleDownload()">ダウンロード</a>
+
 
 
 
@@ -127,6 +124,12 @@
 		'marginLeft': -300
 	},5000);
 	});
+/*--------------------------------------------*/
+  ioSocket.on("show_file_Arrived_message",function(){
+	$('#drop_zone').animate({width:250},1500);
+	$('#download').show();
+});
+
 
 /*-----------------------------------------*/
 	ioSocket.on("down_file",function(forfile){
@@ -143,7 +146,7 @@
 		//	alert(blob);
                     document.getElementById("download").href = window.URL.createObjectURL(blob);
 	            document.getElementById("download").download = forfile.info;
-                }			   
+                }	   
 		
 	});
 
@@ -243,6 +246,7 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	var input =  document.createElement('input');
 	input.id = name+"_input";
 	input.type = "text";
+
 	var btn = document.createElement("button");
 	var t = document.createTextNode("SEND");
 //-------------------------------------
@@ -252,10 +256,21 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 //---------------------------------------
 	btn.onclick = f;
 	btn.appendChild(t); 
+
+
+	var btn_file = document.createElement("button");
+	var btn_file_text = document.createTextNode("ファイル転送");
+
+
+//ファイルを転送する	
+	var btn_file_click = new Function("partnerid = $(this).parent().parents('div').attr('class');alert(partnerid);$('#drop_zone').animate({width:250},1500);ioSocket.emit('file_message_s2c',partnerid);");
+	btn_file.onclick = btn_file_click;
+        btn_file.appendChild(btn_file_text);
+
  
 	input_area.appendChild(input);
 	input_area.appendChild(btn);
-	
+	input_area.appendChild(btn_file);
 
 
 	box.appendChild(nameview);
@@ -341,6 +356,7 @@ function handleFileSelect(evt) {
 
 		 ioSocket.emit("get_file", forfile,partnerid);	
   }, true);
+		 $('#drop_zone').animate({width:0},1500);
 
 }else{
 	alert("エラー");

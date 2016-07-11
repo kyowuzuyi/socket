@@ -16,9 +16,9 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'root',
-  database : 'chat',
-socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
+  password : '',
+  database : 'chat'
+//socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
 connection.connect(function(err) {
@@ -153,6 +153,12 @@ var chat_mag = connection.query('select nameA,message from chat where (nameA = ?
 	});
 
 });
+
+
+socket.on("file_message_s2c",function(partnerid){
+	io.sockets.to(partnerid).emit("show_file_Arrived_message");
+});
+
 
 
 
