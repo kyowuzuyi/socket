@@ -1,0 +1,77 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+</head>
+
+<body style="overflow-x:hidden;">
+
+
+<iframe>
+<html>
+<body>
+	<h1>hhhh</h1>
+</body>
+</html>
+</iframe>
+
+
+
+<div id="img">
+ <img id="tt" src="basketball.gif" alt="�C���X�g�Q" width="300" height="500" style="margin-left:0px;">
+</div>
+  <button type="button" id="ani">test</button>
+
+
+<div id="img1" style="width:%100; height:600px; border:1px red solid;">
+
+</div>
+</div>
+
+
+  <button type="button" id="init">init</button>
+ <button type="button" id="ani1">ani</button>
+
+
+
+
+
+<script type="text/javascript">
+	$("#ani").click( function(){
+
+	$('#tt').animate({
+	'marginLeft': '-300px'
+	},5000);
+
+test();
+
+
+	});
+
+
+	function test(){
+
+	var window_width= $(window).width();
+
+
+
+	var view = " <img src='basketball.gif' id='tt1' width='300' height='500' style='margin-left:"+  window_width +"px'>";
+
+		document.getElementById("img1").innerHTML = view;
+
+	var new_width = window_width-300;
+
+	$('#tt1').animate({
+		'marginLeft': new_width
+	},5000);
+
+
+	}
+</script>
+        
+
+
+</body>
+</html>

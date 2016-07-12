@@ -1,0 +1,394 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+	#initArea,#chat,#MessageArea,#userList{
+	padding-left:500px;
+	padding-bottom:20px;
+	border:1px red solid;
+	margin-top:10px;
+	}
+	#contents{
+	margin:0,auto;
+}
+	
+    </style>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+
+</head>
+
+<body style="overflow-x:hidden;">
+<div class="contents">
+  <div id="initArea">
+    <h1>MyName</h1>
+    <input type="text" id="name_input" style="width:200px;" />
+    <button type="button" id="input_name">name input</button>
+  </div>
+
+<div id="userList">
+<h1>UsersList</h1>
+
+
+</div>
+
+<script type="text/javascript">
+	
+</script>
+        
+
+
+<div id="chat">
+ 
+</div>
+
+<div id="MessageArea">
+<h1>MessageArea</h1>
+	</div>
+</div>
+</div>
+
+<div id="img1" style="width:%100; height:600px; border:0px red solid; position:fixed; top:250px;">
+
+</div>
+
+</div>
+
+<a href="/test">test</a>
+
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+
+<div id ="drop_zone" style="width:0px; height:50px; border:1px red solid;">
+ <a id="download" href="#" download="" onclick="handleDownload()" style="display:none;">ダウンロード</a>
+</div>
+
+<a href="http://localhost/socket/tyoseyi/mypage.php">戻る</a>
+
+<script type="text/javascript">
+window.onload = function(){
+     my_name = window.location.search.substring( 6 );//URLからusernameを取得
+//	alert(my_name);
+ioSocket.emit("get_name", my_name);
+}
+
+</script>
+
+	
+  <script type="text/javascript">
+    var chat_boxs = {};
+	var chat_boxs_mypage = {};
+	var Id_myself="";
+	var partnerid="";
+	 var my_name = "";
+	var usersView = "";
+	 var megView = '';
+	var meg_box='';
+	var right = 1;
+	 var ioSocket = io.connect( "http://localhost:3000" ); // ?`???b?g?T?[?o?[?(II$B@\A (B
+
+	// ?T?[?o?[???$Bp?(I$$B~@7 (Bf?[?^?$B?b(I/$B<j(I,$BHe&=(B???
+    ioSocket.on( "connect", function() {
+	} ); // ?(IZ$BA (B
+    ioSocket.on( "disconnect", function() {} ); // ?(IX$BCG(B
+
+ // ?T?[?o?[???$Bp@W/(B???C?A???g?(IV$B$NA (B?$Bqx(I($B~@G (B?
+    ioSocket.on( "show_name", function( results ) {
+//	alert(results);  
+	for(var i=0; i< results.length; i++){
+		if(results[i].socket_id){//id$Bea8e!bea(I#$Bea^e#ie`!P(Bnline$Bea8e#oea6e#k(B
+			usersView +="<li><a id = '"+ results[i].socket_id + "'style='color:red;'  href='' onclick='getid_buildBox(this);return false;' >"+results[i].name+"</a></li>";
+		}else{
+   			usersView +="<li>"+results[i].name+"</li>";
+		}
+	}
+	
+ 	document.getElementById("userList").innerHTML = usersView;
+	usersView='';
+});
+
+ ioSocket.on( "animate_your", function() {
+
+	var window_width= $(window).width();
+
+	var view = " <img src='http://www.cityofparkland.org/ImageRepository/Document?documentID=9270' id='tt1' width='300' height='500' style='margin-left:"+  window_width +"px'>";
+		document.getElementById("img1").innerHTML = view;
+
+	var new_width = window_width-300;
+
+	$('#tt1').animate({
+		'marginLeft': new_width
+	},5000);
+
+	//new_width -= 300;
+	$('#tt1').animate({
+		'marginLeft': -300
+	},5000);
+	});
+/*--------------------------------------------*/
+  ioSocket.on("show_file_Arrived_message",function(){
+	$('#drop_zone').animate({width:250},1500);
+	$('#download').show();
+});
+
+
+/*-----------------------------------------*/
+	ioSocket.on("down_file",function(forfile){
+
+	 var blob = new Blob([ forfile.content ]);
+
+ if (window.navigator.msSaveBlob) { 
+                    window.navigator.msSaveBlob(blob, "test.txt"); 
+
+                    // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+                    window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+                } else {
+		//	alert("haha");
+		//	alert(blob);
+                    document.getElementById("download").href = window.URL.createObjectURL(blob);
+	            document.getElementById("download").download = forfile.info;
+                }	   
+		
+	});
+
+
+ioSocket.on( "show_message", function(data,results) {
+//	alert(data);
+		 var meg_temp='';
+		for(var i=0; i<results.length; i++){
+				if(results[i].nameA != my_name){
+		meg_temp += "<p style='clear:both;'>"+ results[i].nameA +":"+ results[i].message + "</p>";
+				}else{
+        meg_temp += "<p style='clear:both;float:right;'>"+ results[i].message +":"+ results[i].nameA+ "</p>";
+				}
+		}
+		 document.getElementsByClassName(data)[0].children[1].innerHTML = meg_temp;
+
+	} );
+
+
+	ioSocket.on("c_build_chat_box",function(chat_ids){
+		builed_chatbox(chat_ids.myid,chat_ids.myname);
+	//	first_message(chat_ids.yourname,chat_ids.myname);//歴史メッセージを表示
+	});	
+
+
+	ioSocket.on("getid_myself",function(id_myself){
+	Id_myself = id_myself;
+//	alert('id is'+Id_myself);
+	});	
+
+//bascketball
+
+function animate_my(){
+
+	var view_my = " <img src='http://www.cityofparkland.org/ImageRepository/Document?documentID=9270' id='tt1' width='300' height='500' style='margin-left:0px'>";
+	document.getElementById("img1").innerHTML = view_my;
+	
+
+	$('#tt1').animate({
+	'marginLeft': '-300px'
+	},5000);
+
+}
+
+var inputname;
+
+/*--------------*/
+function builed_chatbox(id,name){
+
+if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存在しない場合のみで処理する
+
+	var box = document.createElement('div');
+    box.className = id;
+	box.style.width = 200;
+	box.style.height = 400;
+	box.style.position = 'fixed';
+	box.style.bottom = 0;
+	box.style.left = right * 300;
+	box.style.border = "1px red solid";
+	box.style.backgroundColor = '#C0C0C0'; 
+
+	var nameview = document.createElement('div');
+	nameview.className = name;
+	nameview.style.width = 195;
+	nameview.style.height = 20;
+	nameview.style.border = "1px red solid";
+	
+
+	var h1Node = document.createElement('p');
+	var text = document.createTextNode('talk with '+name);
+	h1Node.appendChild(text);
+	nameview.appendChild(h1Node);	
+
+
+
+	var chat_message = document.createElement('div');
+	chat_message.className = 'chat_message';
+	chat_message.style.width = 195;
+	chat_message.style.height = 300;
+	chat_message.style.border = "1px red solid";
+	chat_message.style.overflow = 'scroll';
+
+
+
+	var input_area = document.createElement('div');
+	input_area.id = name;
+	input_area.style.width = 195;
+	input_area.style.height = 70;
+	input_area.style.border = "1px red solid";
+
+	var input =  document.createElement('input');
+	input.id = name+"_input";
+	input.type = "text";
+
+	var btn = document.createElement("button");
+	var t = document.createTextNode("SEND");
+//-------------------------------------
+	
+//----------------------------------------------
+	 var f = new Function("var data = {};var yourname = $(this).parent().attr('id');var yourid = $(this).parent().parents('div').attr('class');var message = $(this).prev().val();if(message == 'basketball'){animate_my();}data.yourname = yourname;data.message = message;data.myname = my_name;data.yourid = yourid;data.myid = Id_myself;ioSocket.emit('s2c', data);");
+//---------------------------------------
+	btn.onclick = f;
+	btn.appendChild(t); 
+
+
+	var btn_file = document.createElement("button");
+	var btn_file_text = document.createTextNode("ファイル転送");
+
+
+//ファイルを転送する	
+	var btn_file_click = new Function("partnerid = $(this).parent().parents('div').attr('class');//alert(partnerid);$('#drop_zone').animate({width:250},1500);ioSocket.emit('file_message_s2c',partnerid);");
+	btn_file.onclick = btn_file_click;
+        btn_file.appendChild(btn_file_text);
+
+ 
+	input_area.appendChild(input);
+	input_area.appendChild(btn);
+	input_area.appendChild(btn_file);
+
+
+	box.appendChild(nameview);
+	box.appendChild(chat_message);
+	box.appendChild(input_area);
+	
+
+	document.getElementById("MessageArea").appendChild(box);
+
+//	document.getElementById("MessageArea").innerHTML = document.getElementById("MessageArea").innerHTML + meg_box;
+	chat_boxs[id]=' ';//boxを作るごとに、chat_boxsに登録する
+//	alert(chat_boxs);
+	right += 1;
+	}
+	};
+
+//---------------------------------------------------
+
+function getid_buildBox(element){
+	var chat_ids={};
+	var id = element.id;
+	var name = element.innerHTML;
+ //  alert(name);
+    partnerid = id;
+//	alert("id_myself is "+Id_myself);
+//	alert("partnerid is "+id);
+
+	chat_ids.myid = Id_myself;
+	chat_ids.myname = my_name;
+	chat_ids.yourid = id;
+	chat_ids.yourname = name;
+    
+
+	if(id != Id_myself){//自分と自分でchatしないよう
+	builed_chatbox(id,name);
+	ioSocket.emit("s_build_chat_box",chat_ids);
+}
+/*-----------------------------------*/
+//ioSocket.emit('first_show_message_s2c', data);
+
+
+//	ioSocket.emit('first_show_message_s2c',chat_ids);//
+
+/*--------------------------------------*/
+
+	};
+
+
+//ファイル転送するエリア
+
+
+function handleFileSelect(evt) {
+	
+    evt.stopPropagation();
+    evt.preventDefault();
+	
+    var files = evt.dataTransfer.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+
+
+    for (var i = 0, f; f = files[i]; i++) {
+	if(f.size < 10000){
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate.toLocaleDateString(), '</li>');
+		//		  alert(f.name);
+			var filename = f.name;
+			   var reader = new FileReader();
+
+      // ファイルの読み込みに成功したら、その内容を<div id="result">に反映（2）
+
+      reader.addEventListener('load', function(e) {
+	//	alert( reader.result);
+
+		var res = reader.result;
+		var forfile = {};
+		forfile.content = res;
+		forfile.info = filename;	
+		 
+	//	alert(forfile.info);
+
+		 ioSocket.emit("get_file", forfile,partnerid);	
+  }, true);
+		 $('#drop_zone').animate({width:0},1500);
+
+}else{
+	alert("エラー");
+}
+    // ファイルの内容をテキストとして取得（3）
+	reader.readAsBinaryString(f);
+    //  reader.readAsText(f, 'UTF-8');
+
+    }
+
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+  
+  
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+
+var dropZone = document.getElementById('drop_zone');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+
+
+
+
+
+       </script>
+</body>
+</html>

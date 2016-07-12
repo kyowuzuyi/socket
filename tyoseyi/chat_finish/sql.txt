@@ -1,0 +1,16 @@
+
+| users | CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT NULL,
+  `socket_id` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1 |
+
+CREATE TABLE chat
+    (
+     id INT(11) NOT NULL AUTO_INCREMENT,
+     nameA VARCHAR(64),
+     nameB VARCHAR(64),
+     message VARCHAR(64),
+     PRIMARY KEY (id)
+     );

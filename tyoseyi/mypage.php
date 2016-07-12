@@ -13,6 +13,7 @@
 
 	
 ?>
+
 <!doctype html>
 <html>
 <head>
@@ -107,6 +108,10 @@ echo "<li>";
 		<button type="botton" name="memberEmailRegister" onClick="location.href='MemberEmailpage.php'">メール登録<?php $_SESSION['EmailMessage'] = "";  ?></button>
 
 		<button type="botton" name="logout" onClick="location.href='logout.php'">ログアウト</button>
+
+<?php
+ echo "<a href='http://localhost:3000/?name=". $_SESSION['name']."'>userlist</a>";
+?>
     	</div>
 </div>
 <?php $_SESSION['EmailSendMessage']=""; ?>
