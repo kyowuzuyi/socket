@@ -22,6 +22,11 @@
 
 <body style="overflow-x:hidden;">
 <div class="contents">
+
+<button id="open">open</button>
+<button id="clean">クリーン</button>
+<canvas id="cav" width="300" height="300" style="border:1px solid red;display:none;position:fixed;top:30px;left:20px;"></canvas>
+
   <div id="initArea">
     <h1>MyName</h1>
     <input type="text" id="name_input" style="width:200px;" />
@@ -74,7 +79,7 @@
 </script>
 	
   <script type="text/javascript">
-    var chat_boxs = {};
+    	var chat_boxs = {};
 	var chat_boxs_mypage = {};
 	var Id_myself="";
 	var partnerid="";
@@ -197,6 +202,80 @@ function animate_my(){
 
 }
 
+/*-------paint functions---*/
+
+/* 円を描く */
+function draw1(x,y) {
+  var canvas = document.getElementById('cav');
+  if ( ! canvas || ! canvas.getContext ) { return false; }
+  var ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(x, y, 0.5, 0, Math.PI*2, false);
+  ctx.fill();
+  ctx.stroke();
+}
+
+
+function clean(){	
+ var canvas = document.getElementById('cav');
+  if ( ! canvas || ! canvas.getContext ) { return false; }
+  var ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.clearRect(0, 0, 300, 300);
+	
+}
+
+
+var clicking=0;
+$("#cav").mousedown(function(e){
+//	alert(e.offsetX);
+//	alert(e.offsetY);
+//	alert('aa');
+	var point={};
+	clicking = 1;
+	draw1(e.offsetX,e.offsetY);
+	point.yourid = partnerid;
+	point.x =  e.offsetX;
+	point.y =  e.offsetY;
+	 ioSocket.emit("paint_server",point);
+//socket(e.offsetX,e.offsetY);
+}).mousemove(function(e){
+//	alert(e.offsetX);
+//	alert(e.offsetY);
+//	alert('aa');
+if(clicking == 1){
+	draw1(e.offsetX,e.offsetY);
+	var point={};
+	point.yourid = partnerid;
+	point.x =  e.offsetX;
+	point.y =  e.offsetY;
+	 ioSocket.emit("paint_server",point);
+//socket(e.offsetX,e.offsetY);
+} 
+}).mouseup(function(){
+	clicking = 0;
+	});
+
+ioSocket.on( "open_yourpage", function() {
+	alert($('#cav').display);
+	if(!$('#cav').display){
+	$('#cav').show();
+	}
+});
+
+
+ioSocket.on( "paint_yourpage", function(point) {
+	draw1(point.x,point.y);
+});
+
+
+
+/*-------------------------------------*/
+
+
+
+
+
 var inputname;
 
 /*--------------*/
@@ -258,19 +337,30 @@ if(!($("."+id+"").length)){//boxが存在するかとうかを判定する,存�
 	btn.appendChild(t); 
 
 
+//ファイルを転送する
 	var btn_file = document.createElement("button");
 	var btn_file_text = document.createTextNode("ファイル転送");
 
-
-//ファイルを転送する	
 	var btn_file_click = new Function("partnerid = $(this).parent().parents('div').attr('class');alert(partnerid);$('#drop_zone').animate({width:250},1500);ioSocket.emit('file_message_s2c',partnerid);");
 	btn_file.onclick = btn_file_click;
         btn_file.appendChild(btn_file_text);
+
+
+//paitn
+	var btn_paint = document.createElement("button");
+	var btn_paint_text = document.createTextNode("paint");
+	
+	var btn_paint_click = new Function("partnerid = $(this).parent().parents('div').attr('class');alert(partnerid);	if(!$('#cav').display){$('#cav').show();}ioSocket.emit('open_server',partnerid);");
+	btn_paint.onclick = btn_paint_click;
+        btn_paint.appendChild(btn_paint_text);
+
+
 
  
 	input_area.appendChild(input);
 	input_area.appendChild(btn);
 	input_area.appendChild(btn_file);
+	input_area.appendChild(btn_paint);
 
 
 	box.appendChild(nameview);
@@ -383,11 +473,6 @@ var dropZone = document.getElementById('drop_zone');
   dropZone.addEventListener('drop', handleFileSelect, false);
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
-
-
-
-
 
 
        </script>

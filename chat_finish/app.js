@@ -159,7 +159,14 @@ socket.on("file_message_s2c",function(partnerid){
 	io.sockets.to(partnerid).emit("show_file_Arrived_message");
 });
 
+socket.on("paint_server",function(point){
+	io.sockets.to(point.yourid).emit("paint_yourpage",point);
+});
 
+socket.on("open_server",function(partnerid){
+//	console.log(partnerid);
+	io.sockets.to(partnerid).emit("open_yourpage");
+});
 
 
 });
