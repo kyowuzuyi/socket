@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>jQueryファイルの読み込み</title>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+
+/* 円を描く */
+function draw1(x,y) {
+  var canvas = document.getElementById('cav');
+  if ( ! canvas || ! canvas.getContext ) { return false; }
+  var ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(x, y, 0.5, 0, Math.PI*2, false);
+  ctx.fill();
+  ctx.stroke();
+}
+
+
+function clean(x,y){	
+ var canvas = document.getElementById('cav');
+  if ( ! canvas || ! canvas.getContext ) { return false; }
+  var ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.clearRect(x, y, 300, 300);
+	
+}
+
+</script>
+</head>
+<body>
+<button id="open">open</button>
+<button id="clean">クリーン</button>
+<canvas id="cav" width="300" height="300" style="border:1px solid red;display:none;position:fixed;top:30px;left:20px;"></canvas>
+
+
+
+<script type="text/javascript">
+
+
+$("#open").click(function(){
+	$("#cav").show();
+});
+var clicking=0;
+$("#cav").mousedown(function(e){
+//	alert(e.offsetX);
+//	alert(e.offsetY);
+//	alert('aa');
+	clicking = 1;
+	draw1(e.offsetX,e.offsetY); 
+}).mousemove(function(e){
+//	alert(e.offsetX);
+//	alert(e.offsetY);
+//	alert('aa');
+if(clicking == 1){
+	draw1(e.offsetX,e.offsetY);
+} 
+}).mouseup(function(){
+	clicking = 0;
+	});
+//clean
+
+$("#clean").click(function(){
+ clean(0,0);
+});
+
+
+
+
+</script>
+
+</body>
+</html>
